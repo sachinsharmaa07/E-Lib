@@ -1,38 +1,20 @@
-import SectionWrapper from "../components/SectionWrapper.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 
-function Dashboard() {
+export default function Dashboard() {
   const { user } = useAuth();
 
-  return (
-    <div className="page">
-      <SectionWrapper>
-        <div className="page-header">
-          <h1 className="page-title">Dashboard</h1>
-          <p className="page-subtitle">
-            Welcome, {user?.name || "user"}. This is your simple overview.
-          </p>
-        </div>
-      </SectionWrapper>
+  if (!user) {
+    return <div style={{ padding: "20px" }}>Loading...</div>;
+  }
 
-      <SectionWrapper variant="fade-soft">
-        <div className="dashboard-grid">
-          <div className="stat-card">
-            <div className="stat-label">Borrowed books</div>
-            <div className="stat-value">0</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Reservations</div>
-            <div className="stat-value">0</div>
-          </div>
-          <div className="stat-card">
-            <div className="stat-label">Account email</div>
-            <div className="stat-value">{user?.email || "-"}</div>
-          </div>
-        </div>
-      </SectionWrapper>
+  return (
+    <div style={{ padding: "20px", maxWidth: "600px", margin: "0 auto" }}>
+      <h1>Dashboard</h1>
+      <div style={{ border: "1px solid #ddd", padding: "20px", borderRadius: "8px" }}>
+        <p><strong>Name:</strong> {user.name}</p>
+        <p><strong>Email:</strong> {user.email}</p>
+        <p><strong>Role:</strong> {user.role}</p>
+      </div>
     </div>
   );
 }
-
-export default Dashboard;

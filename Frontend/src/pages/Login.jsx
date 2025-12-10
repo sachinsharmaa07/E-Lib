@@ -1,58 +1,59 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import { useToast } from "../context/ToastContext.jsx";
 
-function Login() {
-  const { login } = useAuth();
-  const { showToast } = useToast();
-  const navigate = useNavigate();
-  const location = useLocation();
-
+export default function Login() {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  if (location.state?.message) {
-    showToast(location.state.message);
-    location.state = null;
-  }
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!email) {
-      setError("Email is required");
-      return;
+    try {
+      setLoading(true);
+      await login(email, password);
+      navigate("/");
+    } catch (err) {
+      setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(true);
-    setTimeout(() => {
-      login(email);
-      showToast("Logged in successfully");
-      navigate("/dashboard");
-    }, 800);
   };
 
   return (
-    <div className="auth-card">
+    <div style={{ maxWidth: "400px", margin: "100px auto", padding: "20px" }}>
       <h2>Login</h2>
-
-      <form className="form" onSubmit={handleSubmit}>
+      {error && <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>}
+      
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
         <input
+          type="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
         />
-
-        {error && <p className="form-error">{error}</p>}
-
-        <button disabled={loading} className="btn">
-          {loading ? "Please wait..." : "Login"}
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
+        />
+        <button type="submit" disabled={loading} className="btn" style={{ padding: "10px" }}>
+          {loading ? "Logging in..." : "Login"}
         </button>
       </form>
+
+      <p style={{ marginTop: "20px", textAlign: "center" }}>
+        Don't have account? <Link to="/register">Register here</Link>
+      </p>
     </div>
   );
 }
-
-export default Login;

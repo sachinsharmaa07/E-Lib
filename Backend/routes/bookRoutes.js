@@ -1,18 +1,50 @@
 import express from "express";
-import Book from "../models/Book.js";
+import multer from "multer";
+import { addBook, getBooks, updateBook, deleteBook } from "../controllers/bookController.js";
+import { adminCheck } from "../middleware/adminCheck.js";
 
 const router = express.Router();
 
-// get all books
-router.get("/", async (req, res) => {
-  const books = await Book.find();
-  res.json(books);
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    if (file.fieldname === "thumbnail") {
+      cb(null, "uploads/images");
+    } else if (file.fieldname === "pdf") {
+      cb(null, "uploads/pdfs");
+    }
+  },
+  filename: (_, file, cb) => {
+    const timestamp = Date.now();
+    const filename = `${timestamp}-${file.originalname.replace(/\s+/g, "_")}`;
+    cb(null, filename);
+  }
 });
 
-// add book
-router.post("/", async (req, res) => {
-  const book = await Book.create(req.body);
-  res.json(book);
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === "thumbnail") {
+      if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+      } else {
+        cb(new Error("Thumbnail must be an image file"));
+      }
+    } else if (file.fieldname === "pdf") {
+      if (file.mimetype === "application/pdf") {
+        cb(null, true);
+      } else {
+        cb(new Error("PDF field must contain a PDF file"));
+      }
+    } else {
+      cb(null, true);
+    }
+  }
 });
+
+router.get("/", getBooks);
+router.post("/", adminCheck, upload.fields([{ name: "thumbnail", maxCount: 1 }, { name: "pdf", maxCount: 1 }]), addBook);
+router.put("/:id", adminCheck, upload.fields([{ name: "thumbnail", maxCount: 1 }, { name: "pdf", maxCount: 1 }]), updateBook);
+router.delete("/:id", adminCheck, deleteBook);
 
 export default router;

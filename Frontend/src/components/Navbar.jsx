@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-logo">
-        <img src={logo} alt="E-Lib Logo" className="large-logo" />
+        <img src={logo} alt="Logo" className="large-logo" />
       </Link>
 
       <input
@@ -22,13 +22,14 @@ function Navbar() {
 
       <div className="navbar-right">
         <Link to="/books" className="navbar-link">Books</Link>
+        <Link to="/admin" className="navbar-link">Admin</Link>
 
         {user ? (
           <>
+            <Link to="/dashboard" className="navbar-link">Dashboard</Link>
+            <Link to="/borrowed" className="navbar-link">My Books</Link>
             <span className="navbar-user">{user.name}</span>
-            <button className="btn btn-outline" onClick={logout}>
-              Logout
-            </button>
+            <button className="btn btn-outline" onClick={logout}>Logout</button>
           </>
         ) : (
           <Link to="/login" className="btn">Login</Link>

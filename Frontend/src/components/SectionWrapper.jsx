@@ -1,14 +1,11 @@
 import { useScrollReveal } from "../hooks/useScrollReveal.jsx";
 
-function SectionWrapper({ children, className = "", variant = "fade-section" }) {
+export default function SectionWrapper({ children, className, variant = "fade-section" }) {
   const { ref, isVisible } = useScrollReveal();
-  const classes = `${variant} ${isVisible ? "visible" : ""} ${className}`;
 
   return (
-    <section ref={ref} className={classes}>
+    <section ref={ref} className={`${variant} ${isVisible ? "visible" : ""} ${className || ""}`}>
       {children}
     </section>
   );
 }
-
-export default SectionWrapper;

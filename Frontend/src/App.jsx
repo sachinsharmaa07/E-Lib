@@ -1,19 +1,21 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar.jsx";
-import Home from "./pages/Home.jsx";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import Books from "./pages/Books.jsx";
-import BookDetails from "./pages/BookDetails.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx"; 
-import Footer from "./pages/Footer.jsx";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Books from "./pages/Books";
+import BookDetails from "./pages/BookDetails";
+import Dashboard from "./pages/Dashboard";
+import BorrowedBooks from "./pages/BorrowedBooks";
+import AdminPanel from "./pages/AdminPanel";
+import Footer from "./pages/Footer";
+import ProtectedRoute from "./components/ProtectedRoute";
 
-function App() {
+const App = () => {
   return (
     <div className="app">
       <Navbar />
-      <main className="app-content">
+      <div className="app-content">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/books" element={<Books />} />
@@ -28,12 +30,20 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/borrowed"
+            element={
+              <ProtectedRoute>
+                <BorrowedBooks />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/admin" element={<AdminPanel />} />
         </Routes>
-      </main>
-    <Footer />
-      
+      </div>
+      <Footer />
     </div>
   );
-}
+};
 
 export default App;

@@ -1,18 +1,9 @@
 import express from "express";
-import User from "../models/User.js";
+import { login, register } from "../controllers/authController.js";
 
 const router = express.Router();
 
-// register
-router.post("/register", async (req, res) => {
-  const user = await User.create(req.body);
-  res.json(user);
-});
-
-// login (basic – no JWT yet)
-router.post("/login", async (req, res) => {
-  const user = await User.findOne({ email: req.body.email });
-  res.json(user);
-});
+router.post("/register", register);
+router.post("/login", login);
 
 export default router;

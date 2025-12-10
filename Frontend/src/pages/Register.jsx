@@ -1,87 +1,68 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-import SectionWrapper from "../components/SectionWrapper.jsx";
 
-function Register() {
-  const { register } = useAuth();
+export default function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const { register } = useAuth();
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    register(form.name, form.email);
-    navigate("/dashboard");
+    try {
+      setLoading(true);
+      await register(name, email, password);
+      navigate("/login");
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="page">
-      <SectionWrapper>
-        <div className="page-header">
-          <h1 className="page-title">Create account</h1>
-          <p className="page-subtitle">
-            Set up your E-Library profile in a few seconds.
-          </p>
-        </div>
-      </SectionWrapper>
+    <div style={{ maxWidth: "400px", margin: "100px auto", padding: "20px" }}>
+      <h2>Register</h2>
+      {error && <p style={{ color: "red", marginBottom: "10px" }}>{error}</p>}
+      
+      <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+          style={{ padding: "10px", borderRadius: "4px", border: "1px solid #ccc" }}
+        />
+        <button type="submit" disabled={loading} className="btn" style={{ padding: "10px" }}>
+          {loading ? "Registering..." : "Register"}
+        </button>
+      </form>
 
-      <SectionWrapper variant="fade-soft">
-        <div className="auth-wrapper">
-          <div className="auth-card">
-            <h2 className="auth-title">Join the library</h2>
-            <p className="auth-subtitle">
-              Basic details only. No complex steps, just simple access.
-            </p>
-
-            <form className="form" onSubmit={handleSubmit}>
-              <label>
-                <span className="form-label-text">Full name</span>
-                <input
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  required
-                  placeholder="Sachin Sharma"
-                />
-              </label>
-
-              <label>
-                <span className="form-label-text">Email</span>
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  placeholder="you@example.com"
-                />
-              </label>
-
-              <label>
-                <span className="form-label-text">Password</span>
-                <input
-                  name="password"
-                  type="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  placeholder="••••••••"
-                />
-              </label>
-
-              <button className="btn" type="submit">
-                Sign up
-              </button>
-            </form>
-          </div>
-        </div>
-      </SectionWrapper>
+      <p style={{ marginTop: "20px", textAlign: "center" }}>
+        Already have account? <Link to="/login">Login here</Link>
+      </p>
     </div>
   );
 }
-
-export default Register;
