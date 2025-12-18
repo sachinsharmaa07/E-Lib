@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import { addBook, getBooks, updateBook, deleteBook } from "../controllers/bookController.js";
+import { addBook, getBooks, updateBook, deleteBook, updateBookQuantity } from "../controllers/bookController.js";
 import { adminCheck } from "../middleware/adminCheck.js";
 
 const router = express.Router();
@@ -45,6 +45,7 @@ const upload = multer({
 router.get("/", getBooks);
 router.post("/", adminCheck, upload.fields([{ name: "thumbnail", maxCount: 1 }, { name: "pdf", maxCount: 1 }]), addBook);
 router.put("/:id", adminCheck, upload.fields([{ name: "thumbnail", maxCount: 1 }, { name: "pdf", maxCount: 1 }]), updateBook);
+router.put("/:id/quantity", adminCheck, updateBookQuantity);
 router.delete("/:id", adminCheck, deleteBook);
 
 export default router;

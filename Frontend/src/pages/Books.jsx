@@ -42,7 +42,7 @@ export default function Books() {
     }
     try {
       await api.post("/borrow", { userId: user._id, bookId });
-      alert("Book borrowed successfully!");
+      alert("Borrow request submitted! Waiting for admin approval.");
       fetchBooks();
       fetchBorrowedBooks();
     } catch (err) {
@@ -62,7 +62,7 @@ export default function Books() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: "20px" }}>
           {books.map((book) => {
             const isBorrowed = borrowedBooks.includes(book._id);
-            const isAvailable = book.status === "Available";
+            const hasAvailable = (book.availableQuantity || 0) > 0;
 
             return (
               <div key={book._id} style={{ border: "1px solid #ddd", padding: "15px", borderRadius: "8px", position: "relative" }}>
@@ -74,10 +74,10 @@ export default function Books() {
                   borderRadius: "4px",
                   fontSize: "12px",
                   fontWeight: "bold",
-                  backgroundColor: isAvailable ? "#4caf50" : "#ff9800",
+                  backgroundColor: hasAvailable ? "#4caf50" : "#ff9800",
                   color: "white"
                 }}>
-                  {isAvailable ? "Available" : "Issued"}
+                  {hasAvailable ? "Available" : "Issued"}
                 </span>
 
                 {book.thumbnail && (
@@ -90,16 +90,28 @@ export default function Books() {
                 <h3>{book.title}</h3>
                 <p><strong>Author:</strong> {book.author}</p>
                 <p><strong>Category:</strong> {book.category}</p>
+                <p style={{ fontSize: "14px", color: "#666" }}>
+                  <strong>Available Copies:</strong> {book.availableQuantity || 0} / {book.quantity || 1}
+                </p>
 
                 {isBorrowed && <p style={{ color: "#ff9800", fontWeight: "bold" }}>✓ You borrowed this</p>}
 
                 <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-                  {isAvailable && !isBorrowed && (
+                  {hasAvailable && !isBorrowed && (
                     <button
                       onClick={() => handleBorrow(book._id)}
                       style={{ flex: 1, padding: "8px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
                     >
-                      Borrow
+                      Request to Borrow
+                    </button>
+                  )}
+
+                  {!hasAvailable && (
+                    <button
+                      disabled
+                      style={{ flex: 1, padding: "8px", backgroundColor: "#ccc", color: "white", border: "none", borderRadius: "4px", cursor: "not-allowed" }}
+                    >
+                      Out of Stock
                     </button>
                   )}
 

@@ -43,14 +43,14 @@ export default function BorrowedBooks() {
 
   return (
     <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>
-      <h1>My Borrowed Books</h1>
+      <h1>My Borrowed Books (Approved)</h1>
 
       {borrowed.length === 0 ? (
-        <p>You haven't borrowed any books yet</p>
+        <p>You haven't borrowed any approved books yet. Check your requests in the Books section.</p>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
           {borrowed.map((item) => (
-            <div key={item._id} style={{ border: "1px solid #ddd", padding: "15px", borderRadius: "8px" }}>
+            <div key={item._id} style={{ border: "2px solid #4caf50", padding: "15px", borderRadius: "8px", backgroundColor: "#f1f8f4" }}>
               {item.book?.thumbnail && (
                 <img
                   src={item.book.thumbnail.startsWith("http") ? item.book.thumbnail : `http://localhost:4000${item.book.thumbnail}`}
@@ -64,7 +64,7 @@ export default function BorrowedBooks() {
               <p><strong>Category:</strong> {item.book?.category || "Unknown"}</p>
 
               <p style={{ fontSize: "12px", color: "#666" }}>
-                <strong>Borrowed on:</strong> {new Date(item.borrowedAt).toLocaleDateString()}
+                <strong>Approved on:</strong> {new Date(item.approvedAt).toLocaleDateString()}
               </p>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
